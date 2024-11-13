@@ -27,7 +27,7 @@ async def create_transaction(transaction: TransactionCreate):
     return response
 
 
-@router.put("/transactions/{transaction_id}", response_model=TransactionUpdate)
+@router.put("/transactions/{transaction_id}")
 async def update_transaction(transaction: TransactionUpdate):
     print(transaction)
     return transaction

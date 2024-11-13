@@ -58,3 +58,6 @@ async def db_create_transaction(db: AsyncSession, transaction: schemas.Transacti
         except:
             response["status_code"] = 500
     return response
+
+async def db_update_transaction(db: AsyncSession, transaction: schemas.TransactionUpdate):
+    updated_transaction = models.Transaction

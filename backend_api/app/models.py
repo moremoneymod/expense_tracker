@@ -13,6 +13,5 @@ class Transaction(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     amount: Mapped[float] = mapped_column(Float)
     description: Mapped[str] = mapped_column(String)
-    category_id: Mapped[int] = mapped_column(Integer)
     category: Mapped[str] = mapped_column(String)
     date: Mapped[str] = mapped_column(String)
