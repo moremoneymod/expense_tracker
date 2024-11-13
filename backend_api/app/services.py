@@ -2,6 +2,7 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.sql.expression import update
 from backend_api.app import models, schemas
 
 
@@ -64,5 +65,18 @@ async def db_update_transaction(db: AsyncSession, transaction: schemas.Transacti
     updated_transaction = models.Transaction(**transaction.dict())
     response = {}
     response["status_code"] = 200
+    async with db() as session:
+        result = await session.execute(select(models.Transaction).where(models.Transaction.id == int(transaction_id)))
+        transaction_data = result.scalars().all()
+        if len(transaction_data) == 0:
+            response["status_code"] = 404
+        try:
+            await session.execute(update(models.Transaction).where(models.Transaction.id == transaction_id).values(
+                amount=updated_transaction.amount, category=updated_transaction.category, date=updated_transaction.date,
+                description=updated_transaction.description))
+            await session.commit()
+        except:
+            response["status_code"] = 500
     print(updated_transaction)
     response = json.dumps(response, ensure_ascii=False)
+    return response

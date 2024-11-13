@@ -30,7 +30,7 @@ async def create_transaction(transaction: TransactionCreate):
 @router.put("/transactions/{transaction_id}")
 async def update_transaction(transaction: TransactionUpdate, transaction_id: int):
     response = await db_update_transaction(AsyncSessionLocal, transaction, transaction_id)
-    return transaction
+    return response
 
 
 @router.delete("/transactions/{transaction_id}")
