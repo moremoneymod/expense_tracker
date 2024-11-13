@@ -13,7 +13,7 @@ class TransactionCreate(BaseModel):
 class TransactionUpdate(BaseModel):
     amount: float = Field(None, gt=0, description="Сумма операции")
     category: str
-    date: datetime
+    date: str
     description: Optional[str] = Field(max_length=255, default="Покупка в магазине")
 
 

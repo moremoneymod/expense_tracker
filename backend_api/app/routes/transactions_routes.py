@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 # from backend_api.app.services import get_transaction
 from backend_api.app.schemas import TransactionCreate, TransactionUpdate, TransactionResponse
 import asyncio
-from backend_api.app.services import db_create_transaction, db_get_all_transactions, db_get_transaction_by_id
+from backend_api.app.services import db_create_transaction, db_get_all_transactions, db_get_transaction_by_id, db_update_transaction
 from backend_api.app.database import AsyncSessionLocal
 
 router = APIRouter(tags=["transactions"])
@@ -28,8 +28,8 @@ async def create_transaction(transaction: TransactionCreate):
 
 
 @router.put("/transactions/{transaction_id}")
-async def update_transaction(transaction: TransactionUpdate):
-    print(transaction)
+async def update_transaction(transaction: TransactionUpdate, transaction_id: int):
+    response = await db_update_transaction(AsyncSessionLocal, transaction, transaction_id)
     return transaction
 
 

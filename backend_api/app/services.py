@@ -59,5 +59,10 @@ async def db_create_transaction(db: AsyncSession, transaction: schemas.Transacti
             response["status_code"] = 500
     return response
 
-async def db_update_transaction(db: AsyncSession, transaction: schemas.TransactionUpdate):
-    updated_transaction = models.Transaction
+
+async def db_update_transaction(db: AsyncSession, transaction: schemas.TransactionUpdate, transaction_id):
+    updated_transaction = models.Transaction(**transaction.dict())
+    response = {}
+    response["status_code"] = 200
+    print(updated_transaction)
+    response = json.dumps(response, ensure_ascii=False)
