@@ -24,7 +24,6 @@ async def db_get_all_transactions(db: AsyncSession):
                                                         "date": transaction.date,
                                                         "description": transaction.description}
     print(response)
-    response = json.dumps(response)
     return response
 
 
@@ -44,7 +43,6 @@ async def db_get_transaction_by_id(db: AsyncSession, transaction_id):
                                                         "category": transaction_data.category,
                                                         "date": transaction_data.date,
                                                         "description": transaction_data.description}
-    response = json.dumps(response)
     return response
 
 
@@ -59,7 +57,6 @@ async def db_create_transaction(db: AsyncSession, transaction: schemas.Transacti
             await session.refresh(db_transaction)
         except:
             response["status_code"] = 500
-    response = json.dumps(response)
     return response
 
 
@@ -82,7 +79,6 @@ async def db_update_transaction(db: AsyncSession, transaction: schemas.Transacti
         except:
             response["status_code"] = 500
     print(updated_transaction)
-    response = json.dumps(response)
     return response
 
 
@@ -101,5 +97,4 @@ async def db_delete_transaction(db: AsyncSession, transaction_id: int):
                 await session.commit()
         except:
             response["status_code"] = 500
-    response = json.dumps(response)
     return response
