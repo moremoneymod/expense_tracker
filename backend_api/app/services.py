@@ -2,28 +2,29 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.sql.expression import update
+from sqlalchemy.sql.expression import update, delete
 from backend_api.app import models, schemas
 
 
 async def db_get_all_transactions(db: AsyncSession):
     transaction_model = models.Transaction
-    transactions = {}
-    transactions["status_code"] = 200
+    response = {}
+    response["status_code"] = 200
     async with db() as session:
         result = await session.execute(select(transaction_model))
         transactions_data = result.scalars().all()
         if len(transactions_data) == 0:
-            transactions["status_code"] = 404
+            response["status_code"] = 404
         else:
-            transactions["transactions"] = {}
+            response["transactions"] = {}
         for transaction in transactions_data:
-            transactions["transactions"][transaction.id] = {"amount": transaction.amount,
-                                                            "category": transaction.category,
-                                                            "date": transaction.date,
-                                                            "description": transaction.description}
-    response = json.dumps(transactions, ensure_ascii=False)
-    print(transactions)
+            response["transactions"][transaction.id] = {"id": transaction.id,
+                                                        "amount": transaction.amount,
+                                                        "category": transaction.category,
+                                                        "date": transaction.date,
+                                                        "description": transaction.description}
+    print(response)
+    response = json.dumps(response)
     return response
 
 
@@ -43,7 +44,7 @@ async def db_get_transaction_by_id(db: AsyncSession, transaction_id):
                                                         "category": transaction_data.category,
                                                         "date": transaction_data.date,
                                                         "description": transaction_data.description}
-    response = json.dumps(response, ensure_ascii=False)
+    response = json.dumps(response)
     return response
 
 
@@ -58,6 +59,7 @@ async def db_create_transaction(db: AsyncSession, transaction: schemas.Transacti
             await session.refresh(db_transaction)
         except:
             response["status_code"] = 500
+    response = json.dumps(response)
     return response
 
 
@@ -66,17 +68,38 @@ async def db_update_transaction(db: AsyncSession, transaction: schemas.Transacti
     response = {}
     response["status_code"] = 200
     async with db() as session:
-        result = await session.execute(select(models.Transaction).where(models.Transaction.id == int(transaction_id)))
-        transaction_data = result.scalars().all()
-        if len(transaction_data) == 0:
-            response["status_code"] = 404
         try:
-            await session.execute(update(models.Transaction).where(models.Transaction.id == transaction_id).values(
-                amount=updated_transaction.amount, category=updated_transaction.category, date=updated_transaction.date,
-                description=updated_transaction.description))
-            await session.commit()
+            result = await session.execute(select(models.Transaction).where(models.Transaction.id == transaction_id))
+            transaction_data = result.scalars().all()
+            if len(transaction_data) == 0:
+                response["status_code"] = 404
+            else:
+                await session.execute(update(models.Transaction).where(models.Transaction.id == transaction_id).values(
+                    amount=updated_transaction.amount, category=updated_transaction.category,
+                    date=updated_transaction.date,
+                    description=updated_transaction.description))
+                await session.commit()
         except:
             response["status_code"] = 500
     print(updated_transaction)
-    response = json.dumps(response, ensure_ascii=False)
+    response = json.dumps(response)
+    return response
+
+
+async def db_delete_transaction(db: AsyncSession, transaction_id: int):
+    response = {}
+    response["status_code"] = 200
+    async with db() as session:
+        try:
+            result = await session.execute(select(models.Transaction).where(models.Transaction.id == transaction_id))
+            transaction_data = result.scalars().all()
+            if len(transaction_data) == 0:
+                response["status_code"] = 404
+            else:
+                await session.execute(delete(models.Transaction).where(models.Transaction.id == transaction_id))
+                print(result)
+                await session.commit()
+        except:
+            response["status_code"] = 500
+    response = json.dumps(response)
     return response

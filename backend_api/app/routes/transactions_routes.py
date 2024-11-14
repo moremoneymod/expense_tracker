@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException
+import json
+
+from fastapi import APIRouter, HTTPException, Query
 # from backend_api.app.services import get_transaction
 from backend_api.app.schemas import TransactionCreate, TransactionUpdate, TransactionResponse
 import asyncio
-from backend_api.app.services import db_create_transaction, db_get_all_transactions, db_get_transaction_by_id, db_update_transaction
+from backend_api.app.services import db_create_transaction, db_get_all_transactions, db_get_transaction_by_id, \
+    db_update_transaction, db_delete_transaction
 from backend_api.app.database import AsyncSessionLocal
 
 router = APIRouter(tags=["transactions"])
@@ -35,4 +38,5 @@ async def update_transaction(transaction: TransactionUpdate, transaction_id: int
 
 @router.delete("/transactions/{transaction_id}")
 async def delete_transaction(transaction_id: int):
-    pass
+    response = await db_delete_transaction(AsyncSessionLocal, transaction_id)
+    return response
