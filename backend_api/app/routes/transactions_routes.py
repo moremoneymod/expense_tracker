@@ -27,7 +27,6 @@ async def get_transaction_by_id(transaction_id):
 @router.post("/transactions")
 async def create_transaction(transaction: TransactionCreate):
     response = await db_create_transaction(AsyncSessionLocal, transaction)
-    print(response)
     return JSONResponse(response)
 
 

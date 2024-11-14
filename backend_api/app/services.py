@@ -78,7 +78,6 @@ async def db_update_transaction(db: AsyncSession, transaction: schemas.Transacti
                 await session.commit()
         except:
             response["status_code"] = 500
-    print(updated_transaction)
     return response
 
 
